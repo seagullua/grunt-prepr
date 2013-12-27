@@ -4,5 +4,7 @@ Implement support for the following directives:
 	- endif
  	- define
 	- undef
-	
+
+Make use of the implemented "preprocess" method in the Grunt task "prepr"
+Support preprocessing files by mask in the task
 Add Grunt build file for the build plugin
