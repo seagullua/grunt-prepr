@@ -11,13 +11,20 @@
   <script type="text/javascript" src="../lib/jasmine-2.0.0/jasmine-html.js"></script>
   <script type="text/javascript" src="../lib/jasmine-2.0.0/boot.js"></script>
 
-  <!-- include source files here... -->
-  <!--
-  <script type="text/javascript" src="src/Player.js"></script>
-  <script type="text/javascript" src="src/Song.js"></script>
-  -->
+  <script type="text/javascript">
 
-  <!-- include spec files here... -->
+    /*
+     * Indicating that the tests are run in a browser and NodeJS module system
+     * is not available.
+     */
+    require = false;
+    module = false;
+  </script>
+
+  <!-- Source -->
+  <script type="text/javascript" src="../src/prepr.js"></script>
+
+  <!-- Tests -->
   <script type="text/javascript" src="ifdef.spec.js"></script>
 
 </head>
