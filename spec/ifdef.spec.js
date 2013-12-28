@@ -80,7 +80,27 @@ line3\n\
         expect(prepr.preprocess(input, ["var1"])).toBe(expected);
     });
 
-  //TODO: Windows line endings
-  //TODO: Different line endings on each line
-  //TODO: Possible to specify which line endings to use in output
+    it("produces Windows line endings in output if they are used in input", function() {
+        var input = "#ifdef var1\r\n\
+line1\r\n\
+#endif\r\n\
+line2";
+        var expected = "line1\r\n\
+line2";
+
+        expect(prepr.preprocess(input, ["var1"])).toBe(expected);
+    });
+
+    it("produces Windows line endings in output if mixed line endings are used in input", function() {
+        var input = "#ifdef var1\r\n\
+line1\r\n\
+line2\n\
+#endif\n\
+line3";
+        var expected = "line1\r\n\
+line2\r\n\
+line3";
+
+        expect(prepr.preprocess(input, ["var1"])).toBe(expected);
+    });
 });

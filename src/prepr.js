@@ -1,20 +1,24 @@
 (function(host) {
-    
+
+    function getOutputLineSeparator(input) {
+        return input.indexOf("\r\n") >= 0 ? "\r\n" : "\n";
+    }
+
     var exported = {
         preprocess: function(input, defines) {
-            var lines = input.split(/\r?\n/);
-            var ignoreLines = false;
-            var output = "";
-            var outputLineSeparator = "\n";
+            var lines = input.split(/\r?\n/),
+                ignoreLines = false,
+                output = "",
+                outputLineSeparator = getOutputLineSeparator(input);
 
             defines = defines.map(function(str) { 
                 return str.toUpperCase();
             });
             for (var i = 0; i < lines.length; i++) {
-                var line = lines[i];
-                var isStartDirective = /#ifdef +(\S*)?/.exec(line);
-                var isEndDirective = /#endif/.exec(line);
-                var isDirective = isStartDirective || isEndDirective;
+                var line = lines[i],
+                    isStartDirective = /#ifdef +(\S*)?/.exec(line),
+                    isEndDirective = /#endif/.exec(line),
+                    isDirective = isStartDirective || isEndDirective;
 
                 if (isStartDirective) {
                     var mode = isStartDirective[1];
