@@ -5,6 +5,7 @@
             var lines = input.split(/\r?\n/);
             var ignoreLines = false;
             var output = "";
+            var outputLineSeparator = "\n";
 
             defines = defines.map(function(str) { 
                 return str.toUpperCase();
@@ -23,13 +24,13 @@
                     }
                 } 
                 if (!ignoreLines && !isDirective) {
-                    output = output + line + "\n";
+                    output = output + line + outputLineSeparator;
                 }
                 if (isEndDirective) {
                     ignoreLines = false;
                 }
             };
-            return output.trim();
+            return output.substring(0, output.length - outputLineSeparator.length);
         }
     };
 
