@@ -35,11 +35,20 @@ line3";
         expect(prepr.preprocess(input, ["var1"])).toBe(expected);
     });
 
-    it("raises error when too many #endif", function() {
+    it("raises error when too many #endif directives", function() {
         expect(function() {
             prepr.preprocess("#endif", ["var1"]);
         }).toThrow(new Error("Found #endif without opening directive"));
     });
 
-    //TODO: Add the ability to pass only one variable and not as an array
+    it("allows to pass one variable without wrapping it into an array", function() {
+        var input = "#ifdef var1\n\
+line1\n\
+#endif\n\
+line2";
+        var expected = "line1\n\
+line2";
+
+        expect(prepr.preprocess(input, "var1")).toBe(expected);
+    });
 });

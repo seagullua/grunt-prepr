@@ -34,6 +34,10 @@
             var lines = input.split(/\r?\n/),
                 output = "";
 
+            if (typeof definedVariables == "string") {
+                definedVariables = [definedVariables];
+            }
+            
             outputLineSeparator = getOutputLineSeparator(input);
 
             definedVariables = definedVariables.map(function(str) { 
