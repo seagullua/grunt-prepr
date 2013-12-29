@@ -114,7 +114,12 @@ line5";
         expect(prepr.preprocess(input, ["var1", "var2", "var3"])).toBe(expected);
     });
 
-    //TODO: Invalid input: non-closed ifdef
-    //TODO: Invalid input: too many endifs
-    //TODO: Add support for shortcut for only one defined variable
+    it("raises error when not closed", function() {
+        var input = "#ifdef var1\n\
+line1";
+
+        expect(function() {
+            prepr.preprocess(input, ["var1"]);
+        }).toThrow(new Error("Unclosed if directives found #ifdef var1"));
+    });
 });
