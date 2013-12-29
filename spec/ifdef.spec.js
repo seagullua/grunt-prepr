@@ -71,8 +71,8 @@ line3\n\
 
         expect(prepr.preprocess(input, ["var1"])).toBe(expected);
     });
-    
-    xit("processes nested directives", function() {
+
+    it("processes nested directives, one active one non-active", function() {
         var input = "#ifdef var1\n\
 line1\n\
 #ifdef var2\n\
@@ -93,6 +93,28 @@ line6";
         expect(prepr.preprocess(input, ["var2"])).toBe(expected);
     });
 
-    //TODO: Two nested active directives
+    it("processes active nested directives", function() {
+        var input = "#ifdef var1\n\
+line1\n\
+#ifdef var2\n\
+line2\n\
+#ifdef var3\n\
+line3\n\
+#endif\n\
+line4\n\
+#endif\n\
+line5\n\
+#endif";
+        var expected = "line1\n\
+line2\n\
+line3\n\
+line4\n\
+line5";
+
+        expect(prepr.preprocess(input, ["var1", "var2", "var3"])).toBe(expected);
+    });
+
+    //TODO: Invalid input: non-closed ifdef
+    //TODO: Invalid input: too many endifs
     //TODO: Add support for shortcut for only one defined variable
 });

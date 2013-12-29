@@ -4,11 +4,15 @@
         return input.indexOf("\r\n") >= 0 ? "\r\n" : "\n";
     }
 
-    function IfDirective(definition, definedVariables) {
+    function IfDirective(definition, definedVariables, parentIfDirective) {
         var directiveMatch = /#ifdef +(\S*)?/.exec(definition);
 
         this.variableName = directiveMatch[1].toUpperCase();
         this.ignoreContent = (definedVariables.indexOf(this.variableName) < 0);
+
+        if (parentIfDirective) {
+            this.ignoreContent = this.ignoreContent || parentIfDirective.ignoreContent;
+        }
     };
 
     IfDirective.prototype.processLine = function(line) {
@@ -30,14 +34,13 @@
             });
             for (var i = 0; i < lines.length; i++) {
                 var line = lines[i],
-                    topIfDirective = null;
+                    topIfDirective = ifDirectivesStack[ifDirectivesStack.length - 1];
 
                 if (/#ifdef/.exec(line)) {
-                    ifDirectivesStack.push(new IfDirective(line, definedVariables));
+                    ifDirectivesStack.push(new IfDirective(line, definedVariables, topIfDirective));
                 } else if (/#endif/.exec(line)) {
                     ifDirectivesStack.pop();
                 } else {
-                    topIfDirective = ifDirectivesStack[ifDirectivesStack.length - 1]
                     line = topIfDirective ? topIfDirective.processLine(line) : line + outputLineSeparator;
 
                     output = output + line;
