@@ -4,34 +4,43 @@
         return input.indexOf("\r\n") >= 0 ? "\r\n" : "\n";
     }
 
-    var exported = {
-        preprocess: function(input, defines) {
-            var lines = input.split(/\r?\n/),
-                ignoreLines = false,
-                output = "",
-                outputLineSeparator = getOutputLineSeparator(input);
+    function IfDirective(definition, definedVariables) {
+        var directiveMatch = /#ifdef +(\S*)?/.exec(definition);
 
-            defines = defines.map(function(str) { 
+        this.variableName = directiveMatch[1].toUpperCase();
+        this.ignoreContent = (definedVariables.indexOf(this.variableName) < 0);
+    };
+
+    IfDirective.prototype.processLine = function(line) {
+        return this.ignoreContent ? "" : line + outputLineSeparator;
+    };
+
+    var outputLineSeparator = "\n",
+        ifDirectivesStack = [];
+
+    var exported = {
+        preprocess: function(input, definedVariables) {
+            var lines = input.split(/\r?\n/),
+                output = "";
+
+            outputLineSeparator = getOutputLineSeparator(input);
+
+            definedVariables = definedVariables.map(function(str) { 
                 return str.toUpperCase();
             });
             for (var i = 0; i < lines.length; i++) {
                 var line = lines[i],
-                    isStartDirective = /#ifdef +(\S*)?/.exec(line),
-                    isEndDirective = /#endif/.exec(line),
-                    isDirective = isStartDirective || isEndDirective;
+                    topIfDirective = null;
 
-                if (isStartDirective) {
-                    var mode = isStartDirective[1];
+                if (/#ifdef/.exec(line)) {
+                    ifDirectivesStack.push(new IfDirective(line, definedVariables));
+                } else if (/#endif/.exec(line)) {
+                    ifDirectivesStack.pop();
+                } else {
+                    topIfDirective = ifDirectivesStack[ifDirectivesStack.length - 1]
+                    line = topIfDirective ? topIfDirective.processLine(line) : line + outputLineSeparator;
 
-                    if (defines.indexOf(mode.toUpperCase()) < 0) {
-                        ignoreLines = true;
-                    }
-                } 
-                if (!ignoreLines && !isDirective) {
-                    output = output + line + outputLineSeparator;
-                }
-                if (isEndDirective) {
-                    ignoreLines = false;
+                    output = output + line;
                 }
             };
             return output.substring(0, output.length - outputLineSeparator.length);

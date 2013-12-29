@@ -71,4 +71,28 @@ line3\n\
 
         expect(prepr.preprocess(input, ["var1"])).toBe(expected);
     });
+    
+    xit("processes nested directives", function() {
+        var input = "#ifdef var1\n\
+line1\n\
+#ifdef var2\n\
+line2\n\
+#endif\n\
+line3\n\
+#endif\n\
+#ifdef var2\n\
+line4\n\
+#ifdef var1\n\
+line5\n\
+#endif\n\
+line6\n\
+#endif";
+        var expected = "line4\n\
+line6";
+
+        expect(prepr.preprocess(input, ["var2"])).toBe(expected);
+    });
+
+    //TODO: Two nested active directives
+    //TODO: Add support for shortcut for only one defined variable
 });
