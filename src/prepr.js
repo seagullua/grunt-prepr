@@ -3,7 +3,7 @@
     function ConditionalDirective() {
     }
     
-    ConditionalDirective.prototype.init = function(definition, definedVariables, outputLineSeparator, parentIfDirective) {
+    ConditionalDirective.prototype.init = function(definition, definedVariables, outputLineSeparator, parentConditionalDirective) {
         var directiveMatch = /#ifn?def +(\S*)?/.exec(definition);
 
         this.definition = definition;
@@ -12,8 +12,8 @@
         this.outputLineSeparator = outputLineSeparator;
         this.ignoreContent = this.shouldIgnoreContent(this.isVariableDefined);
 
-        if (parentIfDirective) {
-            this.ignoreContent = this.ignoreContent || parentIfDirective.ignoreContent;
+        if (parentConditionalDirective) {
+            this.ignoreContent = this.ignoreContent || parentConditionalDirective.ignoreContent;
         }
     };
 
@@ -21,6 +21,18 @@
         return this.ignoreContent ? "" : line + this.outputLineSeparator;
     };
 
+    ConditionalDirective.create = function(definition, definedVariables, outputLineSeparator, parentConditionalDirective) {
+        var directive = null;
+
+        if (/#ifdef/.exec(definition)) {
+            directive = new IfDirective();
+        } else if (/#ifndef/.exec(definition)) {
+            directive = new IfNotDirective();
+        }
+        directive.init(definition, definedVariables, outputLineSeparator, parentConditionalDirective);
+        return directive;
+    };
+    
     function IfDirective() {
     }
 
@@ -59,17 +71,11 @@
 
         for (var i = 0; i < lines.length; i++) {
             var line = lines[i],
-                conditionalDirective = null,
                 topConditionalDirective = this.directivesStack[this.directivesStack.length - 1];
 
-            if (/#ifdef/.exec(line)) {
-                conditionalDirective = new IfDirective();
-                conditionalDirective.init(line, this.definedVariables, this.outputLineSeparator, topConditionalDirective);
-                this.directivesStack.push(conditionalDirective);
-            } else if (/#ifndef/.exec(line)) {
-                conditionalDirective = new IfNotDirective();
-                conditionalDirective.init(line, this.definedVariables, this.outputLineSeparator, topConditionalDirective);
-                this.directivesStack.push(conditionalDirective);
+            if (/#ifn?def/.exec(line)) {
+                this.directivesStack.push(
+                    ConditionalDirective.create(line, this.definedVariables, this.outputLineSeparator, topConditionalDirective));
             } else if (/#endif/.exec(line)) {
                 if (this.directivesStack.length == 0) {
                     throw new Error("Found #endif without opening directive");
