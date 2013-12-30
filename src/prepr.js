@@ -56,6 +56,8 @@
 
         if (typeof definedVariables == "string") {
             definedVariables = [definedVariables];
+        } else if (definedVariables == undefined) {
+        	definedVariables = [];
         }
         this.definedVariables = definedVariables.map(function(str) { 
             return str.toUpperCase();
