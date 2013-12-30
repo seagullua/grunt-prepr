@@ -1,20 +1,42 @@
 (function(host) {
 
-    function IfDirective(definition, definedVariables, outputLineSeparator, parentIfDirective) {
-        var directiveMatch = /#ifdef +(\S*)?/.exec(definition);
+    function ConditionalDirective() {
+    }
+    
+    ConditionalDirective.prototype.init = function(definition, definedVariables, outputLineSeparator, parentIfDirective) {
+        var directiveMatch = /#ifn?def +(\S*)?/.exec(definition);
 
         this.definition = definition;
         this.variableName = directiveMatch[1].toUpperCase();
-        this.ignoreContent = (definedVariables.indexOf(this.variableName) < 0);
+        this.isVariableDefined = (definedVariables.indexOf(this.variableName) >= 0);
         this.outputLineSeparator = outputLineSeparator;
+        this.ignoreContent = this.shouldIgnoreContent(this.isVariableDefined);
 
         if (parentIfDirective) {
             this.ignoreContent = this.ignoreContent || parentIfDirective.ignoreContent;
         }
+    };
+
+    ConditionalDirective.prototype.processLine = function(line) {
+        return this.ignoreContent ? "" : line + this.outputLineSeparator;
+    };
+
+    function IfDirective() {
     }
 
-    IfDirective.prototype.processLine = function(line) {
-        return this.ignoreContent ? "" : line + this.outputLineSeparator;
+    IfDirective.prototype = new ConditionalDirective();
+
+    IfDirective.prototype.shouldIgnoreContent = function(isVariableDefined) {
+        return !isVariableDefined;
+    };
+
+    function IfNotDirective() {
+    }
+
+    IfNotDirective.prototype = new ConditionalDirective();
+
+    IfNotDirective.prototype.shouldIgnoreContent = function(isVariableDefined) {
+        return isVariableDefined;
     };
 
     function Preprocessor(input, definedVariables) {
@@ -30,24 +52,31 @@
         this.outputLineSeparator = input.indexOf("\r\n") >= 0 ? "\r\n" : "\n",
         this.directivesStack = [];
     }
-    
+
     Preprocessor.prototype.run = function() {
         var lines = this.input.split(/\r?\n/),
             output = "";
 
         for (var i = 0; i < lines.length; i++) {
             var line = lines[i],
-                topIfDirective = this.directivesStack[this.directivesStack.length - 1];
+                conditionalDirective = null,
+                topConditionalDirective = this.directivesStack[this.directivesStack.length - 1];
 
             if (/#ifdef/.exec(line)) {
-                this.directivesStack.push(new IfDirective(line, this.definedVariables, this.outputLineSeparator, topIfDirective));
+                conditionalDirective = new IfDirective();
+                conditionalDirective.init(line, this.definedVariables, this.outputLineSeparator, topConditionalDirective);
+                this.directivesStack.push(conditionalDirective);
+            } else if (/#ifndef/.exec(line)) {
+                conditionalDirective = new IfNotDirective();
+                conditionalDirective.init(line, this.definedVariables, this.outputLineSeparator, topConditionalDirective);
+                this.directivesStack.push(conditionalDirective);
             } else if (/#endif/.exec(line)) {
                 if (this.directivesStack.length == 0) {
                     throw new Error("Found #endif without opening directive");
                 }
                 this.directivesStack.pop();
             } else {
-                line = topIfDirective ? topIfDirective.processLine(line) : line + this.outputLineSeparator;
+                line = topConditionalDirective ? topConditionalDirective.processLine(line) : line + this.outputLineSeparator;
 
                 output = output + line;
             }
