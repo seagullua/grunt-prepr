@@ -23,12 +23,23 @@ mult(2, 3);";
 y\n\
 add(1, 2);";
         var expected = "y\n\
-1 + ";
+1 + ;";
 
         expect(prepr.preprocess(input)).toBe(expected);
     });
 
+    //TODO: Same macro is used several times on different lines
+    //TODO: Same macro is used several times on the same line
+    //TODO: A few macros are used
+    
+    //TODO: Same variable is used several times in a macro body
+    //TODO: Several variables in the body of a macro
+    //TODO: Macro is case insensitive
+    //TODO: Macro is redefined several times, each time the definition is updated
+    //TODO: In the macro used in the code not enough arguments are provided
+    //TODO: In the macro used in the code too many arguments are provided
+    //TODO: Name of macro can be only composed from letters, digits and underscore 
     //TODO: Not all the parameters are used in the body
     //TODO: Not all the parameters used in the body are defined
-    //TODO: Using macros defined earlier inside a macros defined later has not effect
+    //TODO: Using macro defined earlier inside a macro defined later has no effect
 });

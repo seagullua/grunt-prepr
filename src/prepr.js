@@ -51,6 +51,57 @@
         return isVariableDefined;
     };
 
+    function Macro() {
+    }
+
+    Macro.prototype.parse = function(definition) {
+        var match = /#define\s+([a-zA-Z][a-zA-Z0-9_]*)\((.*?)\)\s+(.*?)$/.exec(definition);
+
+        if (match) {
+            this.name = match[1];
+            this.args = match[2];
+            this.body = match[3];
+
+            this.args = this.args.split(",").map(function (arg) {
+                return arg.trim();
+            });
+        } else {
+            match = /#define\s+([a-zA-Z][a-zA-Z0-9_]*)\s+(.*?)$/.exec(definition);
+
+            if (match) {
+                this.name = match[1];
+                this.args = [];
+                this.body = match[2];
+            }
+        }
+        return this;
+    };
+
+    Macro.prototype.apply = function(line) {
+        var self = this;
+
+        return (this.args.length > 0) ? 
+            line.replace(new RegExp(self.name + "\\((.*?)\\)", "g"), function(match, argValues) {
+                var result = self.body;
+
+                argValues = argValues.split(",").map(function(argValue) {
+                    return argValue.trim();
+                });
+
+                self.args.forEach(function(arg, index) {
+                    result = result.replace(new RegExp(arg, "g"), argValues[index]);
+                });
+                return result;
+            })
+            : line.replace(new RegExp(self.name, "g"), function(match) {
+                return self.body;
+            });
+    };
+
+    Macro.create = function(definition) {
+        return new Macro().parse(definition);
+    };
+
     function Preprocessor(input, definedVariables) {
         this.input = input;
 
@@ -65,7 +116,21 @@
 
         this.outputLineSeparator = input.indexOf("\r\n") >= 0 ? "\r\n" : "\n",
         this.directivesStack = [];
+        this.macros = {};
     }
+
+    Preprocessor.prototype.applyMacros = function(line) {
+        var macro = null,
+            result = line;
+
+        for (var macroName in this.macros) {
+            if (this.macros.hasOwnProperty(macroName)) {
+                macro = this.macros[macroName];
+                result = macro.apply(result);
+            }
+        }
+        return result;
+    };
 
     Preprocessor.prototype.run = function() {
         var lines = this.input.split(/\r?\n/),
@@ -73,6 +138,7 @@
 
         for (var i = 0; i < lines.length; i++) {
             var line = lines[i],
+                currentMacro = null,
                 topConditionalDirective = this.directivesStack[this.directivesStack.length - 1];
 
             if (/#ifn?def/.exec(line)) {
@@ -83,9 +149,13 @@
                     throw new Error("Found #endif without opening directive");
                 }
                 this.directivesStack.pop();
+            } else if (/#define/.exec(line)) {
+                currentMacro = Macro.create(line);
+
+                this.macros[currentMacro.name] = currentMacro;
             } else {
                 line = topConditionalDirective ? topConditionalDirective.processLine(line) : line + this.outputLineSeparator;
-
+                line = this.applyMacros(line);
                 output = output + line;
             }
         };
