@@ -156,6 +156,8 @@
             } else if (/#else/.exec(line)) {
             	if (topConditionalDirective) {
             	    topConditionalDirective.invert();
+            	} else {
+            		throw new Error("Found #else without opening directive");
             	}
             } else if (/#define/.exec(line)) {
                 currentMacro = Macro.create(line);

@@ -41,7 +41,11 @@ line3";
         }).toThrow(new Error("Found #endif without opening directive"));
     });
 
-    //TODO: else without a matching ifdef or ifndef
+    it("raises error when #else directive without #ifdef or #ifndef", function() {
+        expect(function() {
+            prepr.preprocess("#else", ["var1"]);
+        }).toThrow(new Error("Found #else without opening directive"));
+    });
     
     it("allows to pass one variable without wrapping it into an array", function() {
         var input = "#ifdef var1\n\

@@ -153,5 +153,13 @@ line1";
         }).toThrow(new Error("Unclosed if directives found #ifdef var1"));
     });
     
-    //TODO: Raises error when not closed ifdef/else
+    it("raises error when has subsequent #else but not closed", function() {
+        var input = "#ifdef var1\n\
+#else\n\
+line1";
+
+        expect(function() {
+            prepr.preprocess(input, ["var1"]);
+        }).toThrow(new Error("Unclosed if directives found #ifdef var1"));
+    });
 });
