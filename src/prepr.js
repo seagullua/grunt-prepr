@@ -55,7 +55,8 @@
         return isVariableDefined;
     };
 
-    function Macro() {
+    function Macro(preprocessor) {
+    	this.preprocessor = preprocessor;
     }
 
     Macro.prototype.parse = function(definition) {
@@ -85,9 +86,10 @@
         var self = this;
 
         return (this.args.length > 0) ? 
-            line.replace(new RegExp(self.name + "\\((.*?)\\)", "g"), function(match, argValues) {
+            line.replace(new RegExp(self.name + "\\(([a-zA-Z0-9\\(\\), ]*)\\)", "g"), function(match, argValues) {
                 var result = self.body;
 
+                argValues = self.preprocessor.applyMacros(argValues);                
                 argValues = argValues.split(",").map(function(argValue) {
                     return argValue.trim();
                 });
@@ -102,8 +104,8 @@
             });
     };
 
-    Macro.create = function(definition) {
-        return new Macro().parse(definition);
+    Macro.create = function(preprocessor, definition) {
+        return new Macro(preprocessor).parse(definition);
     };
 
     function Preprocessor(input, definedVariables) {
@@ -160,7 +162,7 @@
             		throw new Error("Found #else without opening directive");
             	}
             } else if (/#define/.exec(line)) {
-                currentMacro = Macro.create(line);
+                currentMacro = Macro.create(this, line);
 
                 this.macros[currentMacro.name] = currentMacro;
             } else {            	

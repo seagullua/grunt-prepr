@@ -71,6 +71,13 @@ minus(1, 2);";
         expect(prepr.preprocess(input)).toBe(expected);
     });
     
+    /*
+     * Not all the combinations are supported, for example, using
+     * arithmetical operators in nested macros like mult(add(1, 2) + add(3, 4), 3).
+     * 
+     * In nested macros arguments can be either alpha-numerical or other allowed nested macros.
+     * This is the limitation of the current implementation.
+     */
     it("allows nested macros", function() {
         var input = "#define mult(x, y) (x * y)\n\
 #define add(x, y) (x + y)\n\
