@@ -41,6 +41,8 @@ line3";
         }).toThrow(new Error("Found #endif without opening directive"));
     });
 
+    //TODO: else without a matching ifdef or ifndef
+    
     it("allows to pass one variable without wrapping it into an array", function() {
         var input = "#ifdef var1\n\
 line1\n\

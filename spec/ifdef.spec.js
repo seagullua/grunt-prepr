@@ -15,7 +15,37 @@ var y = x + 1;";
 
         expect(prepr.preprocess(input, ["PROD"])).toBe(expected);
     });
+    
+    it("can be followed by #else directive", function() {
+        var input = "#ifdef DEBUG\n\
+line1\n\
+#else\n\
+line2\n\
+#endif\n\
+line3";
+        var expected = "line2\n\
+line3";
 
+        expect(prepr.preprocess(input, ["PROD"])).toBe(expected);
+    });
+
+    it("processes nested #else directive", function() {
+        var input = "#ifdef var1\n\
+line1\n\
+#else\n\
+line2\n\
+#ifdef var2\n\
+line3\n\
+#else\n\
+line4\n\
+#endif\n\
+#endif";
+        var expected = "line2\n\
+line4";
+
+        expect(prepr.preprocess(input)).toBe(expected);
+    });
+    
     it("processes several defined variables", function() {
         var input = "#ifdef var1\n\
 line1\n\
@@ -122,4 +152,6 @@ line1";
             prepr.preprocess(input, ["var1"]);
         }).toThrow(new Error("Unclosed if directives found #ifdef var1"));
     });
+    
+    //TODO: Raises error when not closed ifdef/else
 });

@@ -20,6 +20,10 @@
     ConditionalDirective.prototype.processLine = function(line) {
         return this.ignoreContent ? "" : line + this.outputLineSeparator;
     };
+    
+    ConditionalDirective.prototype.invert = function() {
+    	this.ignoreContent = !this.ignoreContent;
+    };
 
     ConditionalDirective.create = function(definition, definedVariables, outputLineSeparator, parentConditionalDirective) {
         var directive = null;
@@ -149,12 +153,16 @@
                     throw new Error("Found #endif without opening directive");
                 }
                 this.directivesStack.pop();
+            } else if (/#else/.exec(line)) {
+            	if (topConditionalDirective) {
+            	    topConditionalDirective.invert();
+            	}
             } else if (/#define/.exec(line)) {
                 currentMacro = Macro.create(line);
 
                 this.macros[currentMacro.name] = currentMacro;
-            } else {
-                line = topConditionalDirective ? topConditionalDirective.processLine(line) : line + this.outputLineSeparator;
+            } else {            	
+            	line = topConditionalDirective ? topConditionalDirective.processLine(line) : line + this.outputLineSeparator;
                 line = this.applyMacros(line);
                 output = output + line;
             }
