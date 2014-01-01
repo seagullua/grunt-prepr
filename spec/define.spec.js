@@ -27,10 +27,58 @@ add(1, 2);";
 
         expect(prepr.preprocess(input)).toBe(expected);
     });
+    
+    it("allows to use the same macro on different lines", function() {
+        var input = "#define mult(x, y) (x * y)\n\
+mult(3, 4);\n\
+mult(5, 6);\n\
+mult(7, 8);";
+        var expected = "(3 * 4);\n\
+(5 * 6);\n\
+(7 * 8);";
 
-    //TODO: Same macro is used several times on different lines
-    //TODO: Same macro is used several times on the same line
-    //TODO: A few macros are used
+        expect(prepr.preprocess(input)).toBe(expected);
+    });
+
+    it("allows to use the same macro a few times on the same line", function() {
+        var input = "#define add(x, y) (x + y)\n\
+add(3, 4) + add(5, 6) + add(7, 8)";
+        var expected = "(3 + 4) + (5 + 6) + (7 + 8)";
+
+        expect(prepr.preprocess(input)).toBe(expected);
+    });
+
+    it("processes different spacing for macro arguments", function() {
+        var input = "#define array(a, b, c, d, e) [a, b, c, d, e]\n\
+array(  1, 2 ,  3  ,4,5)";
+        var expected = "[1, 2, 3, 4, 5]";
+
+        expect(prepr.preprocess(input)).toBe(expected);
+    });
+
+    it("allows to define and use several macros", function() {
+        var input = "#define mult(x, y) (x * y)\n\
+#define add(x, y) (x + y)\n\
+#define minus(x, y) (x - y)\n\
+mult(1, 2);\n\
+add(1, 2);\n\
+minus(1, 2);";
+
+        var expected = "(1 * 2);\n\
+(1 + 2);\n\
+(1 - 2);";
+
+        expect(prepr.preprocess(input)).toBe(expected);
+    });
+    
+    it("allows nested macros", function() {
+        var input = "#define mult(x, y) (x * y)\n\
+#define add(x, y) (x + y)\n\
+mult(add(1, 2), 3);";
+        var expected = "((1 + 2) * 3);";
+
+        expect(prepr.preprocess(input)).toBe(expected);
+    });
     
     //TODO: Same variable is used several times in a macro body
     //TODO: Several variables in the body of a macro
