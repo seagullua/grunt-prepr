@@ -85,4 +85,14 @@ exp(2, 3);";
 
         expect(prepr.preprocess(input)).toBe(expected);
     });
+
+    it("considers variables declared with #define usable in #ifdef", function() {
+        var input = "#define JS\n\
+#ifdef JS\n\
+line1\n\
+#endif";
+        var expected = "line1";
+
+        expect(prepr.preprocess(input)).toBe(expected);
+    });
 });

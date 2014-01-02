@@ -86,7 +86,11 @@ mult(add(1, 2), 3);";
 
         expect(prepr.preprocess(input)).toBe(expected);
     });
-    
+
+    //TODO: #undef can be used to undefine a variable
+    //TODO: #undef with a variable that was not defined
+    //TODO: #undef can undefine a predefined variable
+
     //TODO: Same variable is used several times in a macro body
     //TODO: Several variables in the body of a macro
     //TODO: Macro is case insensitive

@@ -1,14 +1,15 @@
 (function(host) {
 
-    function ConditionalDirective() {
+    function ConditionalDirective(preprocessor) {
+        this.preprocessor = preprocessor;
     }
     
-    ConditionalDirective.prototype.init = function(definition, definedVariables, outputLineSeparator, parentConditionalDirective) {
+    ConditionalDirective.prototype.init = function(definition, outputLineSeparator, parentConditionalDirective) {
         var directiveMatch = /#ifn?def +([a-zA-Z0-9_\-]*)?/.exec(definition);
 
         this.definition = definition;
         this.variableName = directiveMatch[1].toUpperCase();
-        this.isVariableDefined = (definedVariables.indexOf(this.variableName) >= 0);
+        this.isVariableDefined = (this.preprocessor.getDefinedVariables().indexOf(this.variableName) >= 0);
         this.outputLineSeparator = outputLineSeparator;
         this.ignoreContent = this.shouldIgnoreContent(this.isVariableDefined);
 
@@ -25,19 +26,20 @@
     	this.ignoreContent = !this.ignoreContent;
     };
 
-    ConditionalDirective.create = function(definition, definedVariables, outputLineSeparator, parentConditionalDirective) {
+    ConditionalDirective.create = function(preprocessor, definition, outputLineSeparator, parentConditionalDirective) {
         var directive = null;
 
         if (/#ifdef/.exec(definition)) {
-            directive = new IfDirective();
+            directive = new IfDirective(preprocessor);
         } else if (/#ifndef/.exec(definition)) {
-            directive = new IfNotDirective();
+            directive = new IfNotDirective(preprocessor);
         }
-        directive.init(definition, definedVariables, outputLineSeparator, parentConditionalDirective);
+        directive.init(definition, outputLineSeparator, parentConditionalDirective);
         return directive;
     };
     
-    function IfDirective() {
+    function IfDirective(preprocessor) {
+        ConditionalDirective.call(this, preprocessor);
     }
 
     IfDirective.prototype = new ConditionalDirective();
@@ -46,7 +48,8 @@
         return !isVariableDefined;
     };
 
-    function IfNotDirective() {
+    function IfNotDirective(preprocessor) {
+        ConditionalDirective.call(this, preprocessor);
     }
 
     IfNotDirective.prototype = new ConditionalDirective();
@@ -60,7 +63,7 @@
     }
 
     Macro.prototype.parse = function(definition) {
-        var match = /#define\s+([a-zA-Z][a-zA-Z0-9_]*)\((.*?)\)\s+(.*?)(?:\*\/)?$/.exec(definition);
+        var match = /#define\s+([a-zA-Z][a-zA-Z0-9_]*)\((.*?)\)\s*(.*?)(?:\*\/)?$/.exec(definition);
 
         if (match) {
             this.name = match[1];
@@ -71,7 +74,7 @@
                 return arg.trim();
             });
         } else {
-            match = /#define\s+([a-zA-Z][a-zA-Z0-9_]*)\s+(.*?)(?:\*\/)?$/.exec(definition);
+            match = /#define\s+([a-zA-Z][a-zA-Z0-9_]*)\s*(.*?)(?:\*\/)?$/.exec(definition);
 
             if (match) {
                 this.name = match[1];
@@ -108,15 +111,15 @@
         return new Macro(preprocessor).parse(definition);
     };
 
-    function Preprocessor(input, definedVariables) {
+    function Preprocessor(input, predefinedVariables) {
         this.input = input;
 
-        if (typeof definedVariables == "string") {
-            definedVariables = [definedVariables];
-        } else if (definedVariables == undefined) {
-        	definedVariables = [];
+        if (typeof predefinedVariables == "string") {
+            predefinedVariables = [predefinedVariables];
+        } else if (predefinedVariables == undefined) {
+            predefinedVariables = [];
         }
-        this.definedVariables = definedVariables.map(function(str) { 
+        this.predefinedVariables = predefinedVariables.map(function(str) { 
             return str.toUpperCase();
         });
 
@@ -125,17 +128,30 @@
         this.macros = {};
     }
 
-    Preprocessor.prototype.applyMacros = function(line) {
-        var macro = null,
-            result = line;
-
+    Preprocessor.prototype.forEachMacro = function(callback) {
         for (var macroName in this.macros) {
             if (this.macros.hasOwnProperty(macroName)) {
-                macro = this.macros[macroName];
-                result = macro.apply(result);
+                callback(macroName, this.macros[macroName]);
             }
         }
+    };
+
+    Preprocessor.prototype.applyMacros = function(line) {
+        var result = line;
+
+        this.forEachMacro(function (macroName, macro) {
+            result = macro.apply(result);
+        });
         return result;
+    };
+    
+    Preprocessor.prototype.getDefinedVariables = function() {
+        var definedMacroNames = [];
+
+        this.forEachMacro(function (macroName, macro) {
+            definedMacroNames.push(macroName);
+        });
+        return this.predefinedVariables.concat(definedMacroNames);
     };
 
     Preprocessor.prototype.run = function() {
@@ -149,7 +165,7 @@
 
             if (/#ifn?def/.exec(line)) {
                 this.directivesStack.push(
-                    ConditionalDirective.create(line, this.definedVariables, this.outputLineSeparator, topConditionalDirective));
+                    ConditionalDirective.create(this, line, this.outputLineSeparator, topConditionalDirective));
             } else if (/#endif/.exec(line)) {
                 if (this.directivesStack.length == 0) {
                     throw new Error("Found #endif without opening directive");
@@ -186,8 +202,8 @@
     };
 
     var exported = {
-        preprocess: function(input, definedVariables) {
-            return new Preprocessor(input, definedVariables).run();
+        preprocess: function(input, predefinedVariables) {
+            return new Preprocessor(input, predefinedVariables).run();
         }
     };
 
