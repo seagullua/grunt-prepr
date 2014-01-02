@@ -57,4 +57,32 @@ line2";
 
         expect(prepr.preprocess(input, "var1")).toBe(expected);
     });
+
+    it("processes directives commented out with single line comments", function() {
+        var input = "//#ifdef var1\n\
+var x = 1;\n\
+//#endif\n\
+var y = 2;";
+        var expected = "var x = 1;\n\
+var y = 2;";
+
+        expect(prepr.preprocess(input, "var1")).toBe(expected);
+    });
+
+    it("processes macros without parameters commented out with multi-line comments", function() {
+        var input = "/*#define begin {\n\
+#define end }*/\n\
+begin var x = 1; end";
+        var expected = "{ var x = 1; }";
+
+        expect(prepr.preprocess(input)).toBe(expected);
+    });
+
+    it("processes macros with parameters commented out with multi-line comments", function() {
+        var input = "/*#define exp(x, y) x^y*/\n\
+exp(2, 3);";
+        var expected = "2^3;";
+
+        expect(prepr.preprocess(input)).toBe(expected);
+    });
 });

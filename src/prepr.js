@@ -4,7 +4,7 @@
     }
     
     ConditionalDirective.prototype.init = function(definition, definedVariables, outputLineSeparator, parentConditionalDirective) {
-        var directiveMatch = /#ifn?def +(\S*)?/.exec(definition);
+        var directiveMatch = /#ifn?def +([a-zA-Z0-9_\-]*)?/.exec(definition);
 
         this.definition = definition;
         this.variableName = directiveMatch[1].toUpperCase();
@@ -60,7 +60,7 @@
     }
 
     Macro.prototype.parse = function(definition) {
-        var match = /#define\s+([a-zA-Z][a-zA-Z0-9_]*)\((.*?)\)\s+(.*?)$/.exec(definition);
+        var match = /#define\s+([a-zA-Z][a-zA-Z0-9_]*)\((.*?)\)\s+(.*?)(?:\*\/)?$/.exec(definition);
 
         if (match) {
             this.name = match[1];
@@ -71,7 +71,7 @@
                 return arg.trim();
             });
         } else {
-            match = /#define\s+([a-zA-Z][a-zA-Z0-9_]*)\s+(.*?)$/.exec(definition);
+            match = /#define\s+([a-zA-Z][a-zA-Z0-9_]*)\s+(.*?)(?:\*\/)?$/.exec(definition);
 
             if (match) {
                 this.name = match[1];
