@@ -87,6 +87,7 @@ mult(add(1, 2), 3);";
         expect(prepr.preprocess(input)).toBe(expected);
     });
 
+    //TODO: If using a predefined variable, then it is not substituted with an empty string 
     //TODO: Same variable is used several times in a macro body
     //TODO: Several variables in the body of a macro
     //TODO: Macro is case insensitive

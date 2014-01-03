@@ -36,4 +36,8 @@ line2\n\
 
         expect(prepr.preprocess(input)).toBe(expected);
     });
+    
+    //TODO: Same variable is both predefined and defined, then #undefine undefines both
+    //TODO: Using multiline comment with #define
+    //TODO: #undef is case sensitive with #define, insensitive with predefined variables
 });

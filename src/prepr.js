@@ -129,9 +129,14 @@
     }
 
     Preprocessor.prototype.forEachMacro = function(callback) {
+    	var macro = null;
+    	
         for (var macroName in this.macros) {
             if (this.macros.hasOwnProperty(macroName)) {
-                callback(macroName, this.macros[macroName]);
+            	macro = this.macros[macroName];
+                if (macro) {
+                	callback(macroName, macro);
+                }
             }
         }
     };
@@ -143,6 +148,15 @@
             result = macro.apply(result);
         });
         return result;
+    };
+
+    Preprocessor.prototype.undefine = function(variableName) {
+    	var predefinedVariableIndex = this.predefinedVariables.indexOf(variableName.toUpperCase());
+
+    	if (predefinedVariableIndex >= 0) {
+    		this.predefinedVariables.splice(predefinedVariableIndex, 1);
+    	}
+    	this.macros[variableName] = undefined;
     };
     
     Preprocessor.prototype.getDefinedVariables = function() {
@@ -181,6 +195,12 @@
                 currentMacro = Macro.create(this, line);
 
                 this.macros[currentMacro.name] = currentMacro;
+            } else if (/#undef/.exec(line)) {
+            	var match = /#undef\s+([a-zA-Z][a-zA-Z0-9_]*)(?:\*\/)?$/.exec(line);
+
+                if (match) {
+                    this.undefine(match[1]);
+                }
             } else {            	
             	line = topConditionalDirective ? topConditionalDirective.processLine(line) : line + this.outputLineSeparator;
                 line = this.applyMacros(line);
