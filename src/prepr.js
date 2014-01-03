@@ -161,7 +161,7 @@
 
     	newMacros = {};
         this.forEachMacro(function(macroName, macro) {
-    		if ((macroName != variableName) && (macroName.toUpperCase() != variableName)) {
+    		if (macroName.toUpperCase() != variableName.toUpperCase()) {
     			newMacros[macroName] = macro;
     		}
         });
