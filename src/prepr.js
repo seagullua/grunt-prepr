@@ -144,26 +144,35 @@
     Preprocessor.prototype.applyMacros = function(line) {
         var result = line;
 
-        this.forEachMacro(function (macroName, macro) {
+        this.forEachMacro(function(macroName, macro) {
             result = macro.apply(result);
         });
         return result;
     };
 
     Preprocessor.prototype.undefine = function(variableName) {
-    	var predefinedVariableIndex = this.predefinedVariables.indexOf(variableName.toUpperCase());
+    	var newMacros = null,
+    		predefinedVariableIndex = -1; 
 
+    	predefinedVariableIndex = this.predefinedVariables.indexOf(variableName.toUpperCase());
     	if (predefinedVariableIndex >= 0) {
     		this.predefinedVariables.splice(predefinedVariableIndex, 1);
     	}
-    	this.macros[variableName] = undefined;
+
+    	newMacros = {};
+        this.forEachMacro(function(macroName, macro) {
+    		if ((macroName != variableName) && (macroName.toUpperCase() != variableName)) {
+    			newMacros[macroName] = macro;
+    		}
+        });
+        this.macros = newMacros;
     };
     
     Preprocessor.prototype.getDefinedVariables = function() {
         var definedMacroNames = [];
 
-        this.forEachMacro(function (macroName, macro) {
-            definedMacroNames.push(macroName);
+        this.forEachMacro(function(macroName, macro) {
+            definedMacroNames.push(macroName.toUpperCase());
         });
         return this.predefinedVariables.concat(definedMacroNames);
     };
