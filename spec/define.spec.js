@@ -95,6 +95,18 @@ $COLOR1";
         expect(prepr.preprocess(input)).toBe(expected);
     });
 
+    it("supports blanks and dots in macro values", function() {
+        var input = "#define METHOD(CLASS_NAME, NAME) CLASS_NAME.prototype.NAME = function\n\
+METHOD(Vector, add)(other) {\n\
+    return new Vector(this.x + other.x, this.y + other.y);\n\
+};";
+        var expected = "Vector.prototype.add = function(other) {\n\
+    return new Vector(this.x + other.x, this.y + other.y);\n\
+};";
+
+        expect(prepr.preprocess(input)).toBe(expected);
+    });
+
     //TODO: If using a predefined variable, then it is not substituted with an empty string 
     //TODO: Same variable is used several times in a macro body
     //TODO: Several variables in the body of a macro

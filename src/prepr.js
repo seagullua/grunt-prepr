@@ -92,10 +92,17 @@
     };
 
     Macro.prototype.apply = function(line) {
-        var self = this;
+        var self = this,
+            replaceRegex = null,
+            NO_NESTED_PARENTH_REGEX = self.name + "\\(([a-zA-Z0-9, ]*)\\)",
+            NESTED_PARENTH_REGEX = self.name + "\\(([a-zA-Z0-9\\(\\), ]*)\\)";
 
-        return (this.args.length > 0) ? 
-            line.replace(new RegExp(self.name + "\\(([a-zA-Z0-9\\(\\), ]*)\\)", "g"), function(match, argValues) {
+        if (this.args.length > 0) {
+            replaceRegex = line.match(new RegExp(NO_NESTED_PARENTH_REGEX)) 
+                ? NO_NESTED_PARENTH_REGEX
+                : NESTED_PARENTH_REGEX;
+
+            return line.replace(new RegExp(replaceRegex, "g"), function(match, argValues) {
                 var result = self.body;
 
                 argValues = self.preprocessor.applyMacros(argValues);                
@@ -107,10 +114,13 @@
                     result = result.replace(new RegExp(arg, "g"), argValues[index]);
                 });
                 return result;
-            })
-            : line.replace(new RegExp(self.name, "g"), function(match) {
+            });
+        } else {
+            replaceRegex = self.name;
+            return line.replace(new RegExp(replaceRegex, "g"), function(match) {
                 return self.body;
             });
+        }
     };
 
     Macro.create = function(preprocessor, definition) {

@@ -29,12 +29,12 @@ a.add(b);
 #define CLASS(NAME) function NAME
 #define METHOD(CLASS_NAME, NAME) CLASS_NAME.prototype.NAME = function
 
-CLASS("Vector")(x, y) {
+CLASS(Vector)(x, y) {
 	this.x = x; 
 	this.y = y;
 }
 
-METHOD("Vector", "add")(other) {
+METHOD(Vector, add)(other) {
 	return new Vector(this.x + other.x, this.y + other.y);
 };
 
