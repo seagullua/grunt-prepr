@@ -3,20 +3,31 @@ module.exports = function(grunt) {
   grunt.loadTasks("./../../tasks");
   
   grunt.initConfig({
-	prepr: {
-		target1: {
-			src: "src1.js",
-			dest: "src1.processed.js"
-		},
-		target2: {
-			src: "src2.js",
-			dest: "src2.processed.js"
-		}
-	}
+    prepr: {
+        //Mask, output directory specified
+        target1: {
+            src: "in/*.js",
+            dest: "."
+        },
+        //Mask, outputting in the same directory
+        target2: {
+            src: "in/*.js"
+        },
+        //File mask, JS and CSS, output directory specified
+        target3: {
+            src: "in/*",
+            dest: "."
+        },
+        //Processing single file
+        target4: {
+            src: "in/valid_styles_with_variables.css",
+            dest: "."
+        }
+    }
   });
 
-  grunt.registerTask('default', 'Running "prepr" with two different targets', function() {
-	grunt.task.run("prepr");
+  grunt.registerTask('default', 'Running "prepr" for all the specified targets', function() {
+    grunt.task.run("prepr");
   });
 
 };
