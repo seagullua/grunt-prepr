@@ -87,6 +87,14 @@ mult(add(1, 2), 3);";
         expect(prepr.preprocess(input)).toBe(expected);
     });
 
+    it("supports macro names starting with $", function() {
+        var input = "#define $COLOR1 rgb(12, 12, 12)\n\
+$COLOR1";
+        var expected = "rgb(12, 12, 12)";
+
+        expect(prepr.preprocess(input)).toBe(expected);
+    });
+
     //TODO: If using a predefined variable, then it is not substituted with an empty string 
     //TODO: Same variable is used several times in a macro body
     //TODO: Several variables in the body of a macro

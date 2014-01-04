@@ -1,5 +1,11 @@
 (function(host) {
 
+    String.prototype.toRegexLiteral = String.prototype.toRegexLiteral || function(str) {
+
+        //http://stackoverflow.com/questions/3446170/escape-string-for-use-in-javascript-regex
+        return this.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");;
+    };
+
     function ConditionalDirective(preprocessor) {
         this.preprocessor = preprocessor;
     }
@@ -63,10 +69,10 @@
     }
 
     Macro.prototype.parse = function(definition) {
-        var match = /#define\s+([a-zA-Z][a-zA-Z0-9_]*)\((.*?)\)\s*(.*?)(?:\*\/)?$/.exec(definition);
+        var match = /#define\s+([\$a-zA-Z][a-zA-Z0-9_]*)\((.*?)\)\s*(.*?)(?:\*\/)?$/.exec(definition);
 
         if (match) {
-            this.name = match[1];
+            this.name = match[1].toRegexLiteral();
             this.args = match[2];
             this.body = match[3];
 
@@ -74,10 +80,10 @@
                 return arg.trim();
             });
         } else {
-            match = /#define\s+([a-zA-Z][a-zA-Z0-9_]*)\s*(.*?)(?:\*\/)?$/.exec(definition);
+            match = /#define\s+([\$a-zA-Z][a-zA-Z0-9_]*)\s*(.*?)(?:\*\/)?$/.exec(definition);
 
             if (match) {
-                this.name = match[1];
+                this.name = match[1].toRegexLiteral();
                 this.args = [];
                 this.body = match[2];
             }
