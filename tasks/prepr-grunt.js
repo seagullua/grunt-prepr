@@ -1,11 +1,16 @@
 var prepr = require("../src/prepr");
 
 module.exports = function(grunt) {
-	
+    
     grunt.registerMultiTask('prepr', 'Preprocess source file', function() {
-    	//TODO: Implement
-    	console.log(this.target, this.data);
-    	
-//    	prepr.preprocess();
+        //TODO: Implement
+        var src = this.data.src,
+            dest = this.data.dest;
+
+        src = grunt.file.expand(src);
+        
+        console.log("src =", src);
+        console.log("dest = ", dest);
+//        prepr.preprocess();
     });
 };

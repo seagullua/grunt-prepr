@@ -6,6 +6,7 @@ module.exports = function(grunt) {
     prepr: {
         //Mask, output directory specified
         target1: {
+            expand: true,
             src: "in/*.js",
             dest: "."
         },
@@ -23,6 +24,7 @@ module.exports = function(grunt) {
             src: "in/valid_styles_with_variables.css",
             dest: "."
         }
+        //TODO: Input contains nested directories
     }
   });
 
