@@ -26,11 +26,11 @@ module.exports = function(grunt) {
             src: "in/valid_styles_with_variables.css",
             dest: "."
         },
+        //Processing recursively all JS files
         target5: {
             defined: ["DEBUG"],
-            src: "in/*.js",
-            dest: ".",
-            recursive: true
+            src: "in/**/*.js",
+            dest: "."
         }
         //TODO: Processing files asynchronously, running task asynchronously
         //TODO: Specifying not to read the whole file into memory

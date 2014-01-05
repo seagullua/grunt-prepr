@@ -8,13 +8,10 @@ module.exports = function(grunt) {
     //TODO: Do not read the whole file into memory (add option for this)
     //TODO: Option for switching logging on (log: true)
     grunt.registerMultiTask('prepr', 'Preprocess source file', function() {
-        //TODO: Implement
-        var defined = this.data.defined,
+        var defined = this.data.defined || [],
             files = grunt.file.expand(this.data.src),
             destFolder = this.data.dest,
-            logging = this.data.logging;
-
-        logging = true;
+            logging = this.data.logging || false;
 
         files.forEach(function(file) {
             if (logging) {
