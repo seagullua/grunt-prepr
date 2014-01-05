@@ -25,8 +25,13 @@ module.exports = function(grunt) {
         target4: {
             src: "in/valid_styles_with_variables.css",
             dest: "."
+        },
+        target5: {
+            defined: ["DEBUG"],
+            src: "in/*.js",
+            dest: ".",
+            recursive: true
         }
-        //TODO: Input contains nested directories
         //TODO: Processing files asynchronously, running task asynchronously
         //TODO: Specifying not to read the whole file into memory
     }
