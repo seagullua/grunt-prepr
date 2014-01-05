@@ -6,16 +6,18 @@ module.exports = function(grunt) {
     prepr: {
         //Mask, output directory specified
         target1: {
-            expand: true,
+            defined: ["PROD"],
             src: "in/*.js",
             dest: "."
         },
         //Mask, outputting in the same directory
         target2: {
+            defined: ["DEBUG"],
             src: "in/*.js"
         },
         //File mask, JS and CSS, output directory specified
         target3: {
+            defined: ["DEBUG"],
             src: "in/*",
             dest: "."
         },
@@ -25,6 +27,8 @@ module.exports = function(grunt) {
             dest: "."
         }
         //TODO: Input contains nested directories
+        //TODO: Processing files asynchronously, running task asynchronously
+        //TODO: Specifying not to read the whole file into memory
     }
   });
 
