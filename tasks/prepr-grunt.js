@@ -23,7 +23,7 @@ module.exports = function(grunt) {
 
             var fileContents = fs.readFileSync(file).toString(),
                 preprocessedFileContents = prepr.preprocess(fileContents, defined),
-                destFile = destFolder + path.sep + path.basename(file);
+                destFile = destFolder ? destFolder + path.sep + path.basename(file) : file;
 
             if (logging) {
                 console.log("Writing to " + destFile);
