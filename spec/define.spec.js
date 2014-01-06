@@ -107,11 +107,26 @@ METHOD(Vector, add)(other) {\n\
         expect(prepr.preprocess(input)).toBe(expected);
     });
 
-    //TODO: If using a predefined variable, then it is not substituted with an empty string 
-    //TODO: Same variable is used several times in a macro body
-    //TODO: Several variables in the body of a macro
+    it("allows to use same variable in the body of a macro a few times", function() {
+        var input = "#define SQUARE(X) X * X\n\
+SQUARE(2)";
+        var expected = "2 * 2";
+
+        expect(prepr.preprocess(input)).toBe(expected);
+    });
+
+    it("allows to use several variables in the body of a macro", function() {
+        var input = "#define MULT(X, Y, Z) X * Y * Z\n\
+MULT(2, 3, 4)";
+        var expected = "2 * 3 * 4";
+
+        expect(prepr.preprocess(input)).toBe(expected);
+    });
+
     //TODO: Macro is case insensitive
     //TODO: Macro is redefined several times, each time the definition is updated
+
+    //TODO: If using a predefined variable, then it is not substituted with an empty string 
     //TODO: In the macro used in the code not enough arguments are provided
     //TODO: In the macro used in the code too many arguments are provided
     //TODO: Name of macro can be only composed from letters, digits and underscore 
