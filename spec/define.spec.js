@@ -27,7 +27,7 @@ add(1, 2);";
 
         expect(prepr.preprocess(input)).toBe(expected);
     });
-    
+
     it("allows to use the same macro on different lines", function() {
         var input = "#define mult(x, y) (x * y)\n\
 mult(3, 4);\n\
@@ -123,8 +123,29 @@ MULT(2, 3, 4)";
         expect(prepr.preprocess(input)).toBe(expected);
     });
 
-    //TODO: Macro is case insensitive
-    //TODO: Macro is redefined several times, each time the definition is updated
+    it("is case sensitive", function() {
+        var input = "#define MAX(X, Y) ((X > Y) ? X : Y)\n\
+max(2, 3)\n\
+MAX(3, 4)";
+        var expected = "max(2, 3)\n\
+((3 > 4) ? 3 : 4)";
+
+        expect(prepr.preprocess(input)).toBe(expected);
+    });
+
+    it("allows to redefine the same macro several times", function() {
+        var input = "#define value_macro value1\n\
+value_macro\n\
+#define value_macro value2\n\
+value_macro\n\
+#define value_macro value3\n\
+value_macro";
+        var expected = "value1\n\
+value2\n\
+value3";
+
+        expect(prepr.preprocess(input)).toBe(expected);
+    });
 
     //TODO: If using a predefined variable, then it is not substituted with an empty string 
     //TODO: In the macro used in the code not enough arguments are provided
