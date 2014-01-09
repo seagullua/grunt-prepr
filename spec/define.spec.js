@@ -147,11 +147,31 @@ value3";
         expect(prepr.preprocess(input)).toBe(expected);
     });
 
-    //TODO: If using a predefined variable, then it is not substituted with an empty string 
-    //TODO: In the macro used in the code not enough arguments are provided
+    it("does not assume that a predefined variable has a value of empty string", function() {
+        var input = "var1";
+        var expected = "var1";
+
+        expect(prepr.preprocess(input, ["var1"])).toBe(expected);
+    });
+
+    it("allows to use undefined variables in the body of a macro", function() {
+        var input = "#define mult(x, y) (x * y * z)\n\
+mult(2, 3);";
+        var expected = "(2 * 3 * z);";
+
+        expect(prepr.preprocess(input)).toBe(expected);
+    });
+
+    it("allows to not use all variables in the body of a macro", function() {
+        var input = "#define mult(x, y, z) (x * y)\n\
+mult(2, 3, 4);";
+        var expected = "(2 * 3);";
+
+        expect(prepr.preprocess(input)).toBe(expected);
+    });
+
+    //TODO: In the macro used in the code too few arguments are provided
     //TODO: In the macro used in the code too many arguments are provided
     //TODO: Name of macro can be only composed from letters, digits and underscore 
-    //TODO: Not all the parameters are used in the body
-    //TODO: Not all the parameters used in the body are defined
     //TODO: Using macro defined earlier inside a macro defined later has no effect
 });
