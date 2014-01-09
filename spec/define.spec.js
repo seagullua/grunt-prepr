@@ -178,8 +178,14 @@ mult(2);";
         expect(prepr.preprocess(input)).toBe(expected);
     });
 
-    //TODO: In the macro used in the code too few arguments are provided
-    //TODO: In the macro used in the code too many arguments are provided
+    it("handles the case when too many arguments are provided to macro", function() {
+        var input = "#define mult(x, y) (x * y)\n\
+mult(2, 5, 6);";
+        var expected = "(2 * 5);";
+
+        expect(prepr.preprocess(input)).toBe(expected);
+    });
+
     //TODO: Name of macro can be only composed from letters, digits and underscore 
     //TODO: Using macro defined earlier inside a macro defined later has no effect
 });
