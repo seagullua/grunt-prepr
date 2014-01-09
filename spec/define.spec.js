@@ -170,6 +170,14 @@ mult(2, 3, 4);";
         expect(prepr.preprocess(input)).toBe(expected);
     });
 
+    it("handles the case when too few arguments are provided to macro", function() {
+        var input = "#define mult(x, y) (x * y)\n\
+mult(2);";
+        var expected = "(2 * y);";
+
+        expect(prepr.preprocess(input)).toBe(expected);
+    });
+
     //TODO: In the macro used in the code too few arguments are provided
     //TODO: In the macro used in the code too many arguments are provided
     //TODO: Name of macro can be only composed from letters, digits and underscore 

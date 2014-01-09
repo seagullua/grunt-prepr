@@ -111,7 +111,7 @@
                 });
 
                 self.args.forEach(function(arg, index) {
-                    result = result.replace(new RegExp(arg, "g"), argValues[index]);
+                    result = result.replace(new RegExp(arg, "g"), argValues[index] || arg);
                 });
                 return result;
             });
