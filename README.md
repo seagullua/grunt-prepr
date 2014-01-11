@@ -79,6 +79,11 @@ MIT License
 Credits
 ---------------
 
+The following plugins are used during the build:
+
+* JSHint for Grunt [grunt-contrib-jshint][grunt-contrib-jshint]
+* Jasmine for Grunt [grunt-contrib-jasmine][grunt-contrib-jasmine]
+
 [grunt]: https://github.com/cowboy/grunt
 [grunt-contrib-jshint]: https://github.com/gruntjs/grunt-contrib-jshint
 [grunt-contrib-jasmine]: https://github.com/gruntjs/grunt-contrib-jasmine
