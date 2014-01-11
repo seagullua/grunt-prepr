@@ -1,6 +1,6 @@
 module.exports = function(grunt) {
 
-  grunt.loadTasks("./../../tasks");
+  grunt.loadTasks("./../tasks");
   
   grunt.initConfig({
     prepr: {

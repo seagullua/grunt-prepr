@@ -263,7 +263,7 @@ $ as the first symbol and can start with letter or digit or $");
         }
     };
 
-    if (host["module"]) {
+    if (typeof module !== 'undefined' && module.exports) {
         module.exports = exported;
     } else {
         host.prepr = exported;
