@@ -33,7 +33,7 @@ grunt.loadNpmTasks('grunt-prepr');
 
 The standard Grunt conventions are followed when configuring task:
 
-```js
+```javascript
 grunt.initConfig({
   prepr: {
     //Mask, output directory specified
@@ -70,7 +70,124 @@ grunt.initConfig({
 
 ## Examples
 
-TODO:
+For more details, refer to the [examples](https://github.com/antivanov/grunt-prepr/tree/master/examples) in the repository and Jasmine [specs](https://github.com/antivanov/grunt-prepr/tree/master/spec).
+
+Although the examples below deal only with JavaScript and CSS, the preprocessor can be used for any source files.
+
+### Conditionals
+
+Input:
+
+```javascript
+function add(x, y) {
+//#ifdef DEBUG
+	console.log("add(" +  x + ", " + y + ")");
+//#endif
+	return x + y;
+}
+```
+
+Task configuration:
+
+```javascript
+grunt.initConfig({
+  prepr: {
+    dev: {
+      defined: ["DEBUG"],
+      src: "src/*.js",
+      dest: "build"
+    },
+    prod: {
+      defined: ["PROD"],
+      src: "src/*.js",
+      dest: "dist"
+    }
+  }
+});
+```
+
+Result of running `grunt prepr:prod`:
+
+```javascript
+function add(x, y) {
+	return x + y;
+}
+```
+
+Result of running `grunt prepr:dev`:
+
+```javascript
+function add(x, y) {
+//#ifdef DEBUG
+	console.log("add(" +  x + ", " + y + ")");
+//#endif
+	return x + y;
+}
+```
+
+So in the development version logging to console will be left intact while in the production version it will be removed.
+
+### Defining macros
+
+With macros we can, for example, define colors in CSS.
+
+Input:
+
+```css
+/* #define $COLOR1 rgb(12, 12, 12)
+   #define $COLOR2 rgb(23, 45, 67)
+   #define $DEFAULT_BOX_WIDTH 300px*/
+.container {
+    width: $DEFAULT_BOX_WIDTH;
+    position: relative;
+}
+
+.button {
+    background-color: $COLOR1;
+}
+```
+
+Output:
+
+```css
+.container {
+    width: 300px;
+    position: relative;
+}
+
+.button {
+    background-color: rgb(12, 12, 12);
+}
+```
+
+Macros can also take parameters, please, refer to the Jasmine specs.
+
+## Avoid abusing macros
+
+A word of caution about using macros. The same concerns as in C/C++ apply, the preprocessor is pretty unaware of the structure of the
+code (unlike Lisp [macros](http://www.gigamonkeys.com/book/macros-defining-your-own.html)). 
+
+It treats code as strings and modifications then are pretty limited, the source code becomes invalid if not handled by a preprocessor and moreover the resulting code may also be invalid if the macros were defined incorrectly.
+
+I would say that `#define` should not be used with JavaScript in most cases because of that. Just use the normal functions instead. For example,
+
+instead of:
+
+```javascript
+#define MAX(X, Y) (X > Y ? X : Y)
+
+MAX(3, 4);
+```
+
+use pure JavaScript solution:
+
+```javascript
+function max(x, y) {
+    return x > y ? x : y;
+}
+
+max(3, 4);
+```
 
 ## License
 

@@ -1,9 +1,6 @@
-/* 
-#define $COLOR1 rgb(12, 12, 12)
-#define $COLOR2 rgb(23, 45, 67)
-#define $DEFAULT_BOX_WIDTH 300px
-*/
-
+/* #define $COLOR1 rgb(12, 12, 12)
+   #define $COLOR2 rgb(23, 45, 67)
+   #define $DEFAULT_BOX_WIDTH 300px*/
 .container {
     width: $DEFAULT_BOX_WIDTH;
     position: relative;
