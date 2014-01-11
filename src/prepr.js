@@ -88,6 +88,11 @@
                 this.body = match[2];
             }
         }
+        if (!match) {
+            throw new Error("Macro name can contain letters, digits, underscores,\
+$ as the first symbol and can start with letter or digit or $");
+        }
+
         return this;
     };
 

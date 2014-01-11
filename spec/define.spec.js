@@ -186,6 +186,12 @@ mult(2, 5, 6);";
         expect(prepr.preprocess(input)).toBe(expected);
     });
 
-    //TODO: Name of macro can be only composed from letters, digits and underscore 
+    it("raises error when macro name is not valid", function() {
+        expect(function() {
+            prepr.preprocess("#define #mult(x, y) (x * y)");
+        }).toThrow(new Error("Macro name can contain letters, digits, underscores,\
+$ as the first symbol and can start with letter or digit or $"));
+    });
+
     //TODO: Using macro defined earlier inside a macro defined later has no effect
 });
