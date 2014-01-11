@@ -1,10 +1,4 @@
-Implement support for the following directives:
-	- ifdef
-	- ifndef
-	- endif
- 	- define
-	- undef
+Implement the following:
 
-Make use of the implemented "preprocess" method in the Grunt task "prepr"
-Support preprocessing files by mask in the task
-Add Grunt build file for the build plugin
+- Processing files asynchronously, running task asynchronously (add a task option)
+- Log detailed messages when required (add a task option)

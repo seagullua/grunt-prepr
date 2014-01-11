@@ -4,9 +4,6 @@ var prepr = require("../src/prepr"),
 
 module.exports = function(grunt) {
 
-    //TODO: Support asynchronous preprocessing (add option for this)
-    //TODO: Do not read the whole file into memory (add option for this)
-    //TODO: Option for switching logging on (log: true)
     grunt.registerMultiTask('prepr', 'Preprocess source file', function() {
         var defined = this.data.defined || [],
             files = grunt.file.expand(this.data.src),
