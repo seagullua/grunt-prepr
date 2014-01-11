@@ -3,11 +3,13 @@ grunt-prepr
 
 [Grunt][grunt] task that provides a C++ like preprocessor (with some limitations, see examples) for JavaScript, CSS and other source code. Supported directives are:
 
+```
 #ifdef
 #ifndef
 #endif
 #define
 #undef
+```
 
 The task allows to perform both conditional preprocessing of the source code and to define macros.
 
