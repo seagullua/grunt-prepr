@@ -1,5 +1,3 @@
-var prepr = (require ? require("../src/prepr") : this.prepr);
-
 describe("#ifdef directive", function() {
 
     it("processes single defined variable", function() {

@@ -1,5 +1,3 @@
-var prepr = (require ? require("../src/prepr") : this.prepr);
-
 describe("#undef directive", function() {
 
     it("can be used to undefine a predefined variable", function() {

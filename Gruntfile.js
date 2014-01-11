@@ -2,7 +2,11 @@ module.exports = function(grunt) {
     "use strict";
     grunt.initConfig({
         jshint: {
-            files: ['Gruntfile.js', 'tasks/*.js', 'src/*.js'],
+            files: [
+                'Gruntfile.js',
+                'tasks/*.js',
+                'src/*.js'
+            ],
             options: {
                 multistr: true,
                 node: true,
@@ -17,13 +21,21 @@ module.exports = function(grunt) {
                 boss: true,
                 eqnull: true
             }
+        },
+        jasmine: {
+            unit: {
+                src: 'src/**/*.js',
+                options: {
+                    specs: 'spec/*.spec.js',
+                    template: require('grunt-template-jasmine-requirejs')
+                }
+            }
         }
     });
 
-    //TODO: Lint also the examples and tests
-    //TODO: Run the tests
     //TODO: Automatically publish the new version to NPM
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-contrib-jasmine');
 
-    grunt.registerTask('default', ['jshint']);
+    grunt.registerTask('default', ['jshint', 'jasmine:unit']);
 };

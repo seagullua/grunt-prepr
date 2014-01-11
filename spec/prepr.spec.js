@@ -1,5 +1,3 @@
-var prepr = (require ? require("../src/prepr") : this.prepr);
-
 describe("prepr preprocessor", function() {
 
     it("leaves input without directives intact", function() {

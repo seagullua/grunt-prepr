@@ -1,5 +1,3 @@
-var prepr = (require ? require("../src/prepr") : this.prepr);
-
 describe("#define directive", function() {
 
     it("allows to define simple parameterless macros", function() {
