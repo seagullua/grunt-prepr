@@ -33,7 +33,6 @@ module.exports = function(grunt) {
         }
     });
 
-    //TODO: Automatically publish the new version to NPM
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
 
