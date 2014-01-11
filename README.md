@@ -118,9 +118,7 @@ Result of running `grunt prepr:dev`:
 
 ```javascript
 function add(x, y) {
-//#ifdef DEBUG
 	console.log("add(" +  x + ", " + y + ")");
-//#endif
 	return x + y;
 }
 ```
@@ -165,11 +163,9 @@ Macros can also take parameters, please, refer to the Jasmine specs.
 ## Avoid abusing macros
 
 A word of caution about using macros. The same concerns as in C/C++ apply, the preprocessor is pretty unaware of the structure of the
-code (unlike Lisp [macros](http://www.gigamonkeys.com/book/macros-defining-your-own.html)). 
+code (unlike Lisp [macros](http://www.gigamonkeys.com/book/macros-defining-your-own.html)). It treats code as strings and modifications then are pretty limited, the source code with preprocessor directives may become invalid if not handled by a preprocessor and moreover the resulting code may also be invalid if the macros were defined incorrectly.
 
-It treats code as strings and modifications then are pretty limited, the source code becomes invalid if not handled by a preprocessor and moreover the resulting code may also be invalid if the macros were defined incorrectly.
-
-I would say that `#define` should not be used with JavaScript in most cases because of that. Just use the normal functions instead. For example,
+I would say that `#define` should not be used with JavaScript in most of the cases because of these limitations. Just use the normal functions instead. For example,
 
 instead of:
 
