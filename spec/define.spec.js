@@ -193,5 +193,12 @@ mult(2, 5, 6);";
 $ as the first symbol and can start with letter or digit or $"));
     });
 
-    //TODO: Using macro defined earlier inside a macro defined later has no effect
+    it("does not substitute macros in the body of another macro", function() {
+        var input = "#define add(x, y) (x + y)\n\
+#define addOne(x) add(x, 1)\n\
+addOne(3);";
+        var expected = "add(3, 1);";
+
+        expect(prepr.preprocess(input)).toBe(expected);
+    });
 });
