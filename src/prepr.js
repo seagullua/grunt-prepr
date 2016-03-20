@@ -27,7 +27,7 @@
     };
 
     ConditionalDirective.prototype.processLine = function(line) {
-        return this.ignoreContent ? "" : line + this.outputLineSeparator;
+        return this.ignoreContent ? this.outputLineSeparator : line + this.outputLineSeparator;
     };
 
     ConditionalDirective.prototype.invert = function() {
@@ -214,21 +214,25 @@ $ as the first symbol and can start with letter or digit or $");
                 this.directivesStack.push(ConditionalDirective
                         .create(this, line, this.outputLineSeparator,
                                 topConditionalDirective));
+                output += this.outputLineSeparator;
             } else if (/#endif/.exec(line)) {
                 if (this.directivesStack.length === 0) {
                     throw new Error("Found #endif without opening directive");
                 }
                 this.directivesStack.pop();
+                output += this.outputLineSeparator;
             } else if (/#else/.exec(line)) {
                 if (topConditionalDirective) {
                     topConditionalDirective.invert();
                 } else {
                     throw new Error("Found #else without opening directive");
                 }
+                output += this.outputLineSeparator;
             } else if (/#define/.exec(line)) {
                 currentMacro = Macro.create(this, line);
 
                 this.macros[currentMacro.name] = currentMacro;
+                output += this.outputLineSeparator;
             } else if (/#undef/.exec(line)) {
                 var match = /#undef\s+([a-zA-Z][a-zA-Z0-9_]*)(?:\*\/)?$/
                         .exec(line);
@@ -236,6 +240,7 @@ $ as the first symbol and can start with letter or digit or $");
                 if (match) {
                     this.undefine(match[1]);
                 }
+                output += this.outputLineSeparator;
             } else {
                 line = topConditionalDirective ? topConditionalDirective
                         .processLine(line) : line + this.outputLineSeparator;
