@@ -1,7 +1,6 @@
 var prepr = require("../src/prepr"),
     fs = require("fs"),
     path = require("path");
-var through = require('through');
 
 module.exports = function(grunt) {
 
@@ -29,19 +28,4 @@ module.exports = function(grunt) {
             }
         });
     });
-};
-
-exports.browserify = function(defined) {
-    return function(file) {
-        var data = '';
-        return through(function(buf) {
-            data += buf;
-        }, function() {
-            var self = this;
-
-            var preprocessedFileContents = prepr.preprocess(data, defined);
-            self.queue(preprocessedFileContents);
-            self.queue(null);
-        });
-    }
 };
