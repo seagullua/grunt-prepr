@@ -68,6 +68,16 @@ grunt.initConfig({
 });
 ```
 
+## Using as browserify transform
+
+```javascript
+browserify:     {
+    options:      {
+        transform:  [ require('grunt-prepr').browserify(["DEBUG"]) ],
+    }
+}
+```
+
 ## Examples
 
 For more details, refer to the [examples](https://github.com/antivanov/grunt-prepr/tree/master/examples) in the repository and Jasmine [specs](https://github.com/antivanov/grunt-prepr/tree/master/spec).
