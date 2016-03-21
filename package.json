@@ -45,6 +45,7 @@
   "files": [
     "tasks",
     "src",
+    "indes.js",
     "LICENSE-MIT"
   ]
 }
