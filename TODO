@@ -1,4 +1,4 @@
 Implement the following:
 
 - Processing files asynchronously, running task asynchronously (add a task option)
-- Log detailed messages when required (add a task option)
+- Log detailed messages when required (add a task option) 
