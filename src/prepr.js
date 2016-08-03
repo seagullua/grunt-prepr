@@ -12,7 +12,7 @@
 
     ConditionalDirective.prototype.init = function(definition,
             outputLineSeparator, parentConditionalDirective) {
-        var directiveMatch = /#ifn?def +([a-zA-Z0-9_\-]*)?/.exec(definition);
+        var directiveMatch = /\/\/[\s]*#ifn?def +([a-zA-Z0-9_\-]*)?/.exec(definition);
 
         this.definition = definition;
         this.variableName = directiveMatch[1].toUpperCase();
@@ -38,9 +38,9 @@
             outputLineSeparator, parentConditionalDirective) {
         var directive = null;
 
-        if (/#ifdef/.exec(definition)) {
+        if (/\/\/[\s]*#ifdef/.exec(definition)) {
             directive = new IfDirective(preprocessor);
-        } else if (/#ifndef/.exec(definition)) {
+        } else if (/\/\/[\s]*#ifndef/.exec(definition)) {
             directive = new IfNotDirective(preprocessor);
         }
         directive.init(definition, outputLineSeparator,
@@ -73,7 +73,7 @@
     }
 
     Macro.prototype.parse = function(definition) {
-        var match = /#define\s+([\$a-zA-Z][a-zA-Z0-9_]*)\((.*?)\)\s*(.*?)(?:\*\/)?$/
+        var match = /\/\/[\s]*#define\s+([\$a-zA-Z][a-zA-Z0-9_]*)\((.*?)\)\s*(.*?)(?:\*\/)?$/
                 .exec(definition);
 
         if (match) {
@@ -85,7 +85,7 @@
                 return arg.trim();
             });
         } else {
-            match = /#define\s+([\$a-zA-Z][a-zA-Z0-9_]*)\s*(.*?)(?:\*\/)?$/
+            match = /\/\/[\s]*#define\s+([\$a-zA-Z][a-zA-Z0-9_]*)\s*(.*?)(?:\*\/)?$/
                     .exec(definition);
 
             if (match) {
@@ -210,31 +210,31 @@ $ as the first symbol and can start with letter or digit or $");
         for (var i = 0; i < lines.length; i++) {
             var line = lines[i], currentMacro = null, topConditionalDirective = this.directivesStack[this.directivesStack.length - 1];
 
-            if (/#ifn?def/.exec(line)) {
+            if (/\/\/[\s]*#ifn?def/.exec(line)) {
                 this.directivesStack.push(ConditionalDirective
                         .create(this, line, this.outputLineSeparator,
                                 topConditionalDirective));
                 output += this.outputLineSeparator;
-            } else if (/#endif/.exec(line)) {
+            } else if (/\/\/[\s]*#endif/.exec(line)) {
                 if (this.directivesStack.length === 0) {
                     throw new Error("Found #endif without opening directive");
                 }
                 this.directivesStack.pop();
                 output += this.outputLineSeparator;
-            } else if (/#else/.exec(line)) {
+            } else if (/\/\/[\s]*#else/.exec(line)) {
                 if (topConditionalDirective) {
                     topConditionalDirective.invert();
                 } else {
                     throw new Error("Found #else without opening directive");
                 }
                 output += this.outputLineSeparator;
-            } else if (/#define/.exec(line)) {
+            } else if (/\/\/[\s]*#define/.exec(line)) {
                 currentMacro = Macro.create(this, line);
 
                 this.macros[currentMacro.name] = currentMacro;
                 output += this.outputLineSeparator;
-            } else if (/#undef/.exec(line)) {
-                var match = /#undef\s+([a-zA-Z][a-zA-Z0-9_]*)(?:\*\/)?$/
+            } else if (/\/\/[\s]*#undef/.exec(line)) {
+                var match = /\/\/[\s]*#undef\s+([a-zA-Z][a-zA-Z0-9_]*)(?:\*\/)?$/
                         .exec(line);
 
                 if (match) {
